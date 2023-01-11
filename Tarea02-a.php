@@ -12,7 +12,15 @@
     {
         $sql = "SELECT (SELECT nombre FROM ingrediente WHERE codigo = cod_ingrediente), cantidad, medida FROM `receta_ingrediente` WHERE cod_receta=?";
         
-        $db->prepare($sql);
+        $prepsql = $db->prepare($sql);
+        $prepsql->execute(array($_GET['recipe']));
+        
+        $res_arr = [];
+        while ($aux = $prepsql->fetch(pdo::FETCH_ASSOC))
+            array_push ($res_arr, $aux);
+        
+        $str = "";
+        
     }
     else
     {

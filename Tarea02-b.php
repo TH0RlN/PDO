@@ -71,7 +71,10 @@
                         </tr>
                     </table>';
 
+            $str .= "<input type='submit' value='Guardar'>";
             $str .= "</form>";
+            $str .= "<a href='" . $_SERVER['PHP_SELF'] . "?cocinero=" . $res_usuario['codigo'] . "&del=t'><button>Eliminar</button></a>";
+            $str .= "<a href='" . $_SERVER['PHP_SELF'] . "'><button>Cancelar</button></a>";
             
             unset($prep_usuario);
             unset($db);

@@ -19,10 +19,10 @@
                 foreach ($data as $datum)
                     $sql .= " " . $datum . "=?,";
                 $sql = trim($sql, ',');
-                $sql .= " WHERE codigo=" . $_SESSION['id'];
+                $sql .= " WHERE codigo=?";
 
                 $prep = $db->prepare($sql);
-                $prep->execute(array($_POST['nombre'], $_POST['apellido1'], $_POST['apellido2'], $_POST['nombreartistico'], $_POST['sexo'], $_POST['fecha_nacimiento'], $_POST['cod_provincia']));
+                $prep->execute(array($_POST['nombre'], $_POST['apellido1'], $_POST['apellido2'], $_POST['nombreartistico'], $_POST['sexo'], $_POST['fecha_nacimiento'], $_POST['cod_provincia'], $_SESSION['id']));
 
                 unset($prep);
                 unset($db);

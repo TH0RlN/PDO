@@ -1,4 +1,6 @@
 <?php
+    session_start();
+
     $f = fopen("db.json", "r");
 
     $db_data = json_decode(fread($f, filesize("db.json")));
@@ -10,12 +12,30 @@
         $db = new PDO($db_data->conect, $db_data->user, $db_data->passw);
         if (!empty($_POST['submit']))
         {
-            
+            $data = ['nombre', 'apellido1', 'apellido2', 'nombreartistico', 'sexo', 'fecha_nacimiento', 'cod_provincia'];
+            if (!empty($_SESSION['id']))
+            {
+                $sql = "UPDATE chef SET";
+                foreach ($data as $datum)
+                    $sql .= " " . $datum . "=?,";
+                $sql = trim($sql, ',');
+                $sql .= " WHERE codigo=" . $_SESSION['id'];
+
+                $prep = $db->prepare($sql);
+                $prep->execute(array($_POST['nombre'], $_POST['apellido1'], $_POST['apellido2'], $_POST['nombreartistico'], $_POST['sexo'], $_POST['fecha_nacimiento'], $_POST['cod_provincia']));
+
+                unset($prep);
+                unset($db);
+
+                header('Location: Tarea02-c.php');
+            }
         }
         else
         {
             if (!empty($_GET['cocinero']))
             {
+                $_SESSION['id'] = $_GET['cocinero'];
+
                 $sql_usuario = "SELECT * FROM chef WHERE codigo=?";
                 $sql_provincias = "SELECT * FROM provincia";
                 
@@ -31,29 +51,29 @@
                 $str .= '<h1>Editar cocinero</h1>
                             <table>
                                 <tr>
-                                    <td><label for="cod">Código:</label></td>
-                                    <td><input type="number" name="cod" id="cod" disabled value="' . $res_usuario['codigo'] .'"></td>
+                                    <td><label for="codigo">Código:</label></td>
+                                    <td><input type="number" name="codigo" id="codigo" disabled value="' . $res_usuario['codigo'] .'"></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                <td><label for="name">Nombre:</label></td>
-                                <td><input type="text" name="name" id="name" value="' . $res_usuario['nombre'] . '"></td>
+                                <td><label for="nombre">Nombre:</label></td>
+                                <td><input type="text" name="nombre" id="nombre" value="' . $res_usuario['nombre'] . '"></td>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td><label for="ndname">Apellidos:</label></td>
-                                <td><input type="text" name="ndname1" id="ndname1" value="' . $res_usuario['apellido1'] . '"></td>
-                                <td><input type="text" name="ndname2" id="ndname2" value="' . $res_usuario['apellido2'] . '"></td>
+                                <td><label for="apellido">Apellidos:</label></td>
+                                <td><input type="text" name="apellido1" id="apellido1" value="' . $res_usuario['apellido1'] . '"></td>
+                                <td><input type="text" name="apellido2" id="apellido2" value="' . $res_usuario['apellido2'] . '"></td>
                             </tr>
                             <tr>
-                                <td><label for="artname">Nombre artístico:</label></td>
-                                <td><input type="text" name="artname" id="artname" value="' . $res_usuario['nombreartistico'] . '"></td>
+                                <td><label for="nombreartistico">Nombre artístico:</label></td>
+                                <td><input type="text" name="nombreartistico" id="nombreartistico" value="' . $res_usuario['nombreartistico'] . '"></td>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td><label for="sex">Sexo:</label></td>
+                                <td><label for="sexo">Sexo:</label></td>
                                 <td>
-                                    <select name="sex" id="sex">
+                                    <select name="sexo" id="sexo">
                                         <option value="H" ' . ($res_usuario['sexo'] == 'H' ? 'selected' : '') . '>Hombre</option>
                                         <option value="M" ' . ($res_usuario['sexo'] == 'M' ? 'selected' : '') . '>Mujer</option>
                                     </select>
@@ -61,8 +81,8 @@
                                 <td></td>
                             </tr>
                             <tr>
-                                <td><label for="bdate">Fecha de nacimiento:</label></td>
-                                <td><input type="date" name="bdate" id="bdate" value="' . $res_usuario['fecha_nacimiento'] . '"></td>
+                                <td><label for="fecha_nacimiento">Fecha de nacimiento:</label></td>
+                                <td><input type="date" name="fecha_nacimiento" id="fecha_nacimiento" value="' . $res_usuario['fecha_nacimiento'] . '"></td>
                                 <td></td>
                             </tr>
                             <tr>
@@ -71,9 +91,9 @@
                                 <td></td>
                             </tr>
                             <tr>
-                                <td><label for="province">Provincia:</label></td>
+                                <td><label for="cod_provincia">Provincia:</label></td>
                                 <td>
-                                    <select name="province" id="province">';
+                                    <select name="cod_provincia" id="cod_provincia">';
 
                 foreach ($res_provincias as $prov)
                     $str .=                   '<option value="' . $prov['codigo'] . '" ' . ($prov['codigo'] == $res_usuario['cod_provincia'] ? 'selected' : '') . '>' . $prov['nombre'] . '</option>';
@@ -82,11 +102,12 @@
                             </tr>
                         </table>';
 
-                $str .= "<input type='submit' value='Guardar'>";
+                $str .= "<input type='submit' value='Guardar' name='submit' id='submit'>";
                 $str .= "</form>";
-                $str .= "<a href='" . $_SERVER['PHP_SELF'] . "?cocinero=" . $res_usuario['codigo'] . "&del=t'><button>Eliminar</button></a>";
+                $str .= "<a href='" . $_SERVER['PHP_SELF'] . "?cocinero=" . $res_usuario['codigo'] . "&del=t'><button disabled>Eliminar</button></a>";
                 $str .= "<a href='" . $_SERVER['PHP_SELF'] . "'><button>Cancelar</button></a>";
                 
+                unset($prep_provincias);
                 unset($prep_usuario);
                 unset($db);
             }
@@ -109,7 +130,7 @@
     }
     catch (PDOException $e)
     {
-        die('ERROR');
+        die($e->getMessage());
     }
     
     

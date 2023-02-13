@@ -1,8 +1,13 @@
 <?php
+    $f = fopen("db.json", "r");
+
+    $db_data = json_decode(fread($f, filesize("db.json")));
+    fclose($f);
+
     $str = "";
     try
     {
-        $db = new PDO('mysql:dbname=recetas;host=localhost', 'root',  '');
+        $db = new PDO($db_data->conect, $db_data->user, $db_data->passw);
         if (!empty($_GET['cocinero']))
         {
             $sql_usuario = "SELECT * FROM chef WHERE codigo=?";
@@ -71,9 +76,9 @@
                         </tr>
                     </table>';
 
-            $str .= "<input type='submit' value='Guardar'>";
+            $str .= "<input type='submit' value='Guardar' disabled>";
             $str .= "</form>";
-            $str .= "<a href='" . $_SERVER['PHP_SELF'] . "?cocinero=" . $res_usuario['codigo'] . "&del=t'><button>Eliminar</button></a>";
+            $str .= "<a href='" . $_SERVER['PHP_SELF'] . "?cocinero=" . $res_usuario['codigo'] . "&del=t'><button disabled>Eliminar</button></a>";
             $str .= "<a href='" . $_SERVER['PHP_SELF'] . "'><button>Cancelar</button></a>";
             
             unset($prep_usuario);

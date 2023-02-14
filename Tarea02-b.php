@@ -1,7 +1,7 @@
 <?php
     $f = fopen("db.json", "r");
 
-    $db_data = json_decode(fread($f, filesize("db.json")));
+    $db_data = json_decode(fread($f, filesize("db.json")))[0];
     fclose($f);
 
     $str = "";

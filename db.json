@@ -1,1 +1,1 @@
-{"conect":"mysql:dbname=recetas;host=localhost","user":"root","passw":""}
+[{"conect":"mysql:dbname=recetas;host=localhost","user":"root","passw":""},{"conect":"mysql:dbname=recetas;host=localhost","user":"yo","passw":"1234"}]

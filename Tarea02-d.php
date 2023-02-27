@@ -24,10 +24,31 @@
                 $prep = $db->prepare($sql);
                 $prep->execute(array($_POST['nombre'], $_POST['apellido1'], $_POST['apellido2'], $_POST['nombreartistico'], $_POST['sexo'], $_POST['fecha_nacimiento'], $_POST['cod_provincia'], $_SESSION['id']));
 
+                $n = $prep->rowCount();
+
                 unset($prep);
                 unset($db);
 
-                header('Location: Tarea02-c.php');
+                $str = "
+                <htlm>
+                    <head>
+                        <title>Resultado</title>
+                    </head>
+                    <body>
+                        <h1>Resultado</h1>
+                        <p>Se han actualizado $n registros.</p>
+                        <a href='Tarea02-d.php'>Volver</a>
+                    </body>
+                    <footer>
+                        <script>
+                            setTimeout(function() {
+                                window.location.href = 'Tarea02-d.php';
+                            }, 4000);
+                        </script>
+                    </footer>
+                </html>";
+
+                //header('Location: Tarea02-d.php');
             }
         }
         else
@@ -129,6 +150,10 @@
         }
     }
     catch (PDOException $e)
+    {
+        die($e->getMessage());
+    }
+    catch (Exception $e)
     {
         die($e->getMessage());
     }
